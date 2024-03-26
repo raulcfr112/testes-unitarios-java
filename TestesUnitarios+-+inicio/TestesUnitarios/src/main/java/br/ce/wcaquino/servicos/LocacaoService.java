@@ -1,25 +1,31 @@
 package br.ce.wcaquino.servicos;
 
-import java.util.*;
-
+import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.utils.DataUtils;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
-import org.junit.Test;
 
-import static br.ce.wcaquino.utils.DataUtils.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+
+import static br.ce.wcaquino.utils.DataUtils.adicionarDias;
 
 public class LocacaoService {
+
+    private LocacaoDAO dao;
+    private SPCService spcService;
+    private EmailService emailService;
 
     public Locacao alugarFilme(Usuario usuario, List<Filme> filmes) throws LocadoraException, FilmeSemEstoqueException {
         if (usuario == null) {
             throw new LocadoraException("Usuario vazio");
         }
 
-        if ( filmes == null || filmes.isEmpty()) {
+        if (filmes == null || filmes.isEmpty()) {
             throw new LocadoraException("F vazio");
         }
 
@@ -27,6 +33,17 @@ public class LocacaoService {
             if (filme.getEstoque() == 0) {
                 throw new FilmeSemEstoqueException();
             }
+        }
+
+        boolean negativado;
+        try {
+            negativado = spcService.possuiNegativacao(usuario);
+        } catch (Exception e) {
+            throw new LocadoraException("Problemas com SPC, tente novamente mais tarde");
+        }
+
+        if (negativado){
+            throw new LocadoraException("Usuario negativado");
         }
 
         Locacao locacao = new Locacao();
@@ -38,11 +55,19 @@ public class LocacaoService {
         for (int i = 0; i < filmes.size(); i++) {
             Filme filme = filmes.get(i);
             Double valorFilme = filme.getPrecoLocacao();
-            switch (i){
-                case 2: valorFilme = valorFilme * 0.75; break;
-                case 3: valorFilme = valorFilme * 0.50; break;
-                case 4: valorFilme = valorFilme * 0.25; break;
-                case 5: valorFilme = 0d; break;
+            switch (i) {
+                case 2:
+                    valorFilme = valorFilme * 0.75;
+                    break;
+                case 3:
+                    valorFilme = valorFilme * 0.50;
+                    break;
+                case 4:
+                    valorFilme = valorFilme * 0.25;
+                    break;
+                case 5:
+                    valorFilme = 0d;
+                    break;
             }
             valorTotal += valorFilme;
         }
@@ -52,15 +77,24 @@ public class LocacaoService {
         //Entrega no dia seguinte
         Date dataEntrega = new Date();
         dataEntrega = adicionarDias(dataEntrega, 1);
-        if (DataUtils.verificarDiaSemana(dataEntrega,Calendar.SUNDAY)){
+        if (DataUtils.verificarDiaSemana(dataEntrega, Calendar.SUNDAY)) {
             dataEntrega = adicionarDias(dataEntrega, 1);
         }
         locacao.setDataRetorno(dataEntrega);
 
         //Salvando a locacao...
-        //TODO adicionar método para salvar
+
+        dao.salvar(locacao);
 
         return locacao;
     }
 
+    public void notificarAtrasos() {
+        List<Locacao> locacoes = dao.obterLocacoesPendentes();
+        for (Locacao locacao : locacoes) {
+            if (locacao.getDataRetorno().before(new Date())){
+                emailService.notificarAtraso(locacao.getUsuario());
+            }
+        }
+    }
 }
