@@ -3,8 +3,8 @@ package br.ce.wcaquino.servicos;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
-import br.ce.wcaquino.matchers.builders.FilmeBuilder;
 import br.ce.wcaquino.utils.DataUtils;
+import buildermaster.BuilderMaster;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
 import org.junit.Assume;
@@ -20,8 +20,8 @@ import java.util.Date;
 import java.util.List;
 
 import static br.ce.wcaquino.matchers.MatchersProprios.*;
-import static br.ce.wcaquino.matchers.builders.FilmeBuilder.*;
-import static br.ce.wcaquino.matchers.builders.UsuarioBuilder.*;
+import static br.ce.wcaquino.builders.FilmeBuilder.*;
+import static br.ce.wcaquino.builders.UsuarioBuilder.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -115,6 +115,10 @@ public class LocacaoServiceTest {
 
         //verificacao
         assertThat(retorno.getDataRetorno(), caiNumaSegunda());
+    }
+
+    public static void main(String[] args) {
+        new BuilderMaster().gerarCodigoClasse(Locacao.class);
     }
 
 }

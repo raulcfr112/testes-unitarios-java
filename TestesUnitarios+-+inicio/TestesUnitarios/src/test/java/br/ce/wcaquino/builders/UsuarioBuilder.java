@@ -1,4 +1,4 @@
-package br.ce.wcaquino.matchers.builders;
+package br.ce.wcaquino.builders;
 
 import br.ce.wcaquino.entidades.Usuario;
 
