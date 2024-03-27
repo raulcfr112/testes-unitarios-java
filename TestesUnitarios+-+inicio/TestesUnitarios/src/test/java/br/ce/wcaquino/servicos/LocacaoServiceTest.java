@@ -7,17 +7,16 @@ import br.ce.wcaquino.entidades.Usuario;
 import br.ce.wcaquino.utils.DataUtils;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.*;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.util.Arrays;
 import java.util.Calendar;
@@ -61,6 +60,7 @@ public class LocacaoServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        locacaoService = PowerMockito.spy(locacaoService);
     }
 
     @Test
@@ -236,6 +236,36 @@ public class LocacaoServiceTest {
         error.checkThat(locacaoRetornada.getValor(), is(12.0));
         error.checkThat(locacaoRetornada.getDataLocacao(), is(ehHoje()));
         error.checkThat(locacaoRetornada.getDataRetorno(), ehHojeComDiferencaDeDias(3));
+
+    }
+
+    @Test
+    public void deveAlugarFilme_SemCalcularValor() throws Exception {
+        //cenario
+        Usuario usuario = umUsuario().agora();
+        List<Filme> filmes = Arrays.asList(umFilme().agora());
+
+        PowerMockito.doReturn(1.0).when(locacaoService, "calcularValorLocacao", filmes);
+
+        //acao
+        Locacao locacao = locacaoService.alugarFilme(usuario,filmes);
+
+        //verificacao
+        assertThat(locacao.getValor(), is(1.0));
+        PowerMockito.verifyPrivate(locacaoService).invoke("calcularValorLocacao", filmes);
+
+    }
+
+    @Test
+    public void deveCalcularValorLocacao() throws Exception {
+        //cenario
+        List<Filme> filmes = Arrays.asList(umFilme().agora());
+
+        //acao
+        Double valor = (Double) Whitebox.invokeMethod(locacaoService, "calcularValorLocacao", filmes);
+
+        //verificacao
+        Assert.assertThat(valor, is(4.0));
 
     }
 
