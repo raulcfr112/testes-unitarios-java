@@ -4,12 +4,14 @@ import br.ce.wcaquino.daos.LocacaoDAO;
 import br.ce.wcaquino.entidades.Filme;
 import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
+import br.ce.wcaquino.runners.ParallelRunner;
 import br.ce.wcaquino.utils.DataUtils;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
 import org.junit.*;
 import org.junit.rules.ErrorCollector;
 import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
@@ -32,6 +34,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
+@RunWith(ParallelRunner.class)
 public class LocacaoServiceTest {
     @InjectMocks
     @Spy
@@ -56,6 +59,12 @@ public class LocacaoServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
+        System.out.println("Iniciando 2 ....");
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        System.out.println("Finalizando 2 ....");
     }
 
     @Test
