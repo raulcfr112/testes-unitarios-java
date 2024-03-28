@@ -6,6 +6,8 @@ import br.ce.wcaquino.entidades.Locacao;
 import br.ce.wcaquino.entidades.Usuario;
 import exceptions.FilmeSemEstoqueException;
 import exceptions.LocadoraException;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,6 +50,18 @@ public class CalculoValorLocacaoTest {
     @Before
     public void setup(){
         MockitoAnnotations.initMocks(this);
+        System.out.println("Iniciando 3...");
+        CalculadoraTest.ordem.append(3);
+    }
+
+    @After
+    public void tearDown(){
+        System.out.println("Finalizando 3...");
+    }
+
+    @AfterClass
+    public static void tearDownClass(){
+        System.out.println(CalculadoraTest.ordem.toString());
     }
 
     private static Filme filme1 = umFilme().agora();

@@ -34,7 +34,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-@RunWith(ParallelRunner.class)
 public class LocacaoServiceTest {
     @InjectMocks
     @Spy
@@ -60,11 +59,17 @@ public class LocacaoServiceTest {
     public void setup() {
         MockitoAnnotations.initMocks(this);
         System.out.println("Iniciando 2 ....");
+        CalculadoraTest.ordem.append("2");
     }
 
     @After
     public void tearDown() throws Exception {
         System.out.println("Finalizando 2 ....");
+    }
+
+    @AfterClass
+    public static void afterClass() throws Exception {
+        System.out.println(CalculadoraTest.ordem.toString());
     }
 
     @Test

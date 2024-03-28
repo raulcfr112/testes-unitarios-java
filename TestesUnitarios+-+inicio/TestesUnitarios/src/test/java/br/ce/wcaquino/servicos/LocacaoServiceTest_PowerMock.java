@@ -67,22 +67,13 @@ public class LocacaoServiceTest_PowerMock {
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = Arrays.asList(umFilme().comValor(5.0).agora());
 
-//        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28,4,2017));
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, 28);
-        calendar.set(Calendar.MONTH, Calendar.APRIL);
-        calendar.set(Calendar.YEAR, 2017);
-        PowerMockito.mockStatic(Calendar.class);
-        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
-
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(28,4,2017));
 
         //acao
         Locacao locacao = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
         error.checkThat(locacao.getValor(), is(equalTo(5.0)));
-//        error.checkThat(locacao.getDataLocacao(), ehHoje());
-//        error.checkThat(locacao.getDataRetorno(), ehHojeComDiferencaDeDias(1));
         error.checkThat(DataUtils.isMesmaData(locacao.getDataLocacao(), DataUtils.obterData(28, 4, 2017)), is(true));
         error.checkThat(DataUtils.isMesmaData(locacao.getDataRetorno(), DataUtils.obterData(29, 4, 2017)), is(true));
     }
@@ -93,24 +84,13 @@ public class LocacaoServiceTest_PowerMock {
         Usuario usuario = umUsuario().agora();
         List<Filme> filmes = Arrays.asList(umFilme().agora());
 
-//        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(30,3,2024));
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DAY_OF_MONTH, 30);
-        calendar.set(Calendar.MONTH, Calendar.MARCH);
-        calendar.set(Calendar.YEAR, 2024);
-        PowerMockito.mockStatic(Calendar.class);
-        PowerMockito.when(Calendar.getInstance()).thenReturn(calendar);
-
+        PowerMockito.whenNew(Date.class).withNoArguments().thenReturn(DataUtils.obterData(30,3,2024));
 
         //acao
         Locacao retorno = locacaoService.alugarFilme(usuario, filmes);
 
         //verificacao
         assertThat(retorno.getDataRetorno(), caiNumaSegunda());
-//        PowerMockito.verifyNew(Date.class, Mockito.times(2)).withNoArguments();
-
-        PowerMockito.verifyStatic(Calendar.class, Mockito.times(2));
-        Calendar.getInstance();
     }
 
     @Test
